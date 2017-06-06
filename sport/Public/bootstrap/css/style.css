@@ -1,0 +1,18 @@
+#toTop{
+    display: none;
+    position: fixed;
+    bottom: 30%;
+    right: 40px;
+    width: 64px;
+    height: 64px;
+    z-index:9999;
+    /*background-image: url('../images/37bOOOPIC23_202.jpg');*/
+    background-size:100% 100%;
+    background-repeat: no-repeat;
+    opacity: 0.4;
+    filter: alpha(opacity=40); /* For IE8 and earlier */
+}
+#toTop:hover {
+    opacity: 0.8;
+    filter: alpha(opacity=80); /* For IE8 and earlier */
+}

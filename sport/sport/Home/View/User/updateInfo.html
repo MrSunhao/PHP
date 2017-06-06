@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改信息</title>
+    <link rel="stylesheet" href="_PUBLIC_/bootstrap/css/bootstrap.min.css">
+    <style>
+        body {
+            height: 100%;
+            width: 100%;
+            background-color: #5bc0de;
+        }
+
+        h1 {
+            text-align: center;
+            text-shadow: #0f0f0f;
+        }
+
+        .registCon {
+            height: 100%;
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        .form-horizontal {
+            background-color: gainsboro;
+            padding-bottom: 40px;
+            border-radius: 15px;
+        }
+
+        .form-horizontal .form-group {
+            padding: 0 20px;
+            margin: 0 0 25px 0;
+        }
+
+        #submit {
+            margin-left: 20px;
+            float: left;
+            border-radius: 12px;
+        }
+
+        #reset {
+            float: right;
+            margin-right: 20px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="navbar navbar-default " role="navigation">
+        <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse"
+                            data-target="#example-navbar-collapse">
+                        <span class="sr-only">切换导航</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="__MODULE__/Index">首页</a>
+                </div>
+                <div class="collapse navbar-collapse" id="example-navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="operation"><a href="__MODULE__/Index/rankList">运动榜</a></li>
+                        <li class="operation"><a href="__MODULE__/Index/dynamic">动态</a></li>
+                        <li><a href="__MODULE__/Index/record">个人记录</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <if condition="isset($_SESSION['user'])">
+                            <li class="active"><a
+                                    href="__MODULE__/User/info/id/<{$Think.session.user.user_id}>"><{$Think.session.user.user_number}></a>
+                            </li>
+                            <li class="operation"><a href="__MODULE__/User/logout"><span
+                                    class="glyphicon glyphicon-log-out">注销</span></a></li>
+                            <else/>
+                            <li><a href="__MODULE__/Regist"><span
+                                    class="glyphicon glyphicon-user"></span> 注册</a></li>
+                            <li><a href="__MODULE__/Login"><span
+                                    class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+                            <!--<li class="operation"><a href="#">个人信息</a></li>-->
+                        </if>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="registCon">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-offset-4 col-md-4">
+                    <form class="form-horizontal" action="__MODULE__/User/updateInfo"
+                          method="post" onsubmit="return checkInfo()">
+                        <h1><strong>修改信息</strong></h1>
+                        <input type="hidden" value="<{$info.user_id}>" name="user_id">
+                        <div class="form-group" style="padding-top:10px; ">
+                            <input type="text" readonly="readonly" value="<{$info.user_number}>" class="form-control"
+                                   name="user_number">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="性名：如 孙杨" value="<{$info.user_name}>" required
+                                   class="form-control" name="user_name" id="name">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" placeholder="班级：计科1402（卓越）" value="<{$info.user_class}>" required
+                                   class="form-control"
+                                   name="user_class" id="user_class">
+                        </div>
+                        <div class="form-group">
+                            <if condition="$info.user_gender eq 0">
+                                <label for="genderMen" class="checkbox-inline">
+                                    <input type="radio" value="0" checked required id="genderMen" name="user_gender">男
+                                </label>
+
+                                <label for="genderWomen" class="checkbox-inline">
+                                    <input type="radio" value="1" required id="genderWomen" name="user_gender">女
+                                </label>
+                                <else/>
+                                <label for="genderMen" class="checkbox-inline">
+                                    <input type="radio" value="0" required id="genderMen" name="user_gender">男
+                                </label>
+
+                                <label for="genderWomen" class="checkbox-inline">
+                                    <input type="radio" value="1" checked required id="genderWomen" name="user_gender">女
+                                </label>
+                            </if>
+                        </div>
+                        <div class="form-group">
+                            <label for="slecteGrade">选择列表</label>
+                            <select class="form-control" id="slecteGrade" name="user_grade">
+                                <option value="2012">2012级</option>
+                                <option value="2013">2013级</option>
+                                <option value="2014" selected="selected">2014级</option>
+                                <option value="2015">2015级</option>
+                                <option value="2016">2016级</option>
+                                <option value="2017">2017级</option>
+                                <option value="2018">2018级</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" value="<{$info.user_birthday}>"
+                                   placeholder="选择或填写您的生日" name="user_birthday"
+                                   id="birthday" onclick="new Calendar().show(this)">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="user_hobby" value="<{$info.user_hobby}>"
+                                   placeholder="填写您的爱好">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="user_descroption" placeholder="填写您的个人宣言">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="user_qq" id="qq" value="<{$info.user_qq}>"
+                                   placeholder="填写您的QQ">
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-control" name="user_email" id="email"
+                                   value="<{$info.user_email}>"
+                                   placeholder="填写您的邮箱">
+                        </div>
+                        <input type="submit" class="btn btn-default" value="提交" name="submit" id="submit">
+                        <input type="reset" class="btn btn-default" value="重置" name="reset" id="reset">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="_PUBLIC_/bootstrap/js/jquery-3.1.1.min.js"></script>
+<script src="_PUBLIC_/bootstrap/js/bootstrap.min.js"></script>
+<script src="_PUBLIC_/bootstrap/js/calendar.js"></script>
+<script>
+    $(function () {
+        $("[data-toggle='tooltip']").tooltip();
+    });
+
+    function checkInfo() {
+        var name = document.getElementById('name').value;
+        var user_class = document.getElementById('user_class').value;
+        var birthday = document.getElementById('birthday').value;
+        var qq = document.getElementById('qq').value;
+        var email = document.getElementById('email').value;
+
+        if (name === null || name === '') {
+            alert('名字不能为空！');
+            return false;
+        }
+        if (user_class === null || user_class === '') {
+            alert('班级不能为空！');
+            return false;
+        }
+
+        if (birthday !== null && birthday !== '') {
+            var reg = /^((((1[6-9]|[2-9]\d)\d{2})-(0?[13578]|1[02])-(0?[1-9]|[12]\d|3[01]))|(((1[6-9]|[2-9]\d)\d{2})-(0?[13456789]|1[012])-(0?[1-9]|[12]\d|30))|(((1[6-9]|[2-9]\d)\d{2})-0?2-(0?[1-9]|1\d|2[0-8]))|(((1[6-9]|[2-9]\d)(0[48]|[2468][048]|[13579][26])|((16|[2468][048]|[3579][26])00))-0?2-29-))$/;
+            if (!reg.test(birthday)) {
+                alert('生日格式错误！');
+                return false;
+            }
+        }
+
+        if (qq !== null && qq !== '') {
+            var reg_qq = /^[1-9]\d{4,10}$/;
+            if (!reg_qq.test(qq)) {
+                alert('QQ格式错误！');
+                return false;
+            }
+        }
+
+        if (email !== null && email !== '') {
+            var rep_email = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/;
+            if (!rep_email.test(email)) {
+                alert('邮箱格式错误！');
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+</body>
+</html>

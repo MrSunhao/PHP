@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>运动统计</title>
+
+    <!--引入相关css文件-->
+    <link rel="stylesheet" href="_PUBLIC_/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="_PUBLIC_/bootstrap/admin/admin.css">
+    <script src=" _PUBLIC_/bootstrap/js/jquery-3.1.1.min.js"></script>
+    <script src=" _PUBLIC_/bootstrap/js/bootstrap.min.js"></script>
+    <script src="_PUBLIC_/bootstrap/js/calendar.js"></script>
+    <style>
+        table tr td {
+            vertical-align: middle !important;
+        }
+
+        .btn-slAll {
+            float: left;
+            margin-right: 10px;
+        }
+
+        .btn-del {
+            float: left;
+            margin-right: 10px;
+        }
+
+        .btn-reset {
+            float: left;
+        }
+
+        .page {
+            margin: 0 auto;
+        }
+
+        .page ul {
+            margin: 0;
+        }
+
+        .form-group {
+            float: left;
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div id="wrapper">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">运动管理系统</a>
+        </div>
+        <!-- Top Menu Items -->
+        <ul class="nav navbar-right top-nav">
+
+            <li class="dropdown">
+                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"><i
+                        class="glyphicon glyphicon-hand-right"></i> 快捷通道 <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="__ROOT__/index.php"><i>网站首页</i></a>
+                    </li>
+                    <li>
+                        <a href="#"><i>运动榜</i></a>
+                    </li>
+                    <li>
+                        <a href="__ROOT__/index.php/Home/Index/dynamic"><i>运动动态</i></a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"><i
+                        class="glyphicon glyphicon-user"></i><{$Think.session.user.user_name}><b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a href="__ROOT__/index.php/Home/User/info/id/<{$Think.session.user.user_id}>"><i
+                                class="glyphicon glyphicon-user"></i>个人信息</a>
+                    </li>
+                    <li>
+                        <a href="__ROOT__/index.php/Home/User/logout"><i class="glyphicon glyphicon-off"></i>注销</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav side-nav">
+                <li>
+                    <a href="__MODULE__/Index"><i class="glyphicon glyphicon-home"></i> 首页</a>
+                </li>
+                <li>
+                    <a href="__MODULE__/UserManage/index"><i
+                            class="glyphicon glyphicon-user"></i> 用户管理 </a>
+                </li>
+                <li>
+                    <a href="__MODULE__/TopicManage"><i class="glyphicon glyphicon-star"></i> 运动动态管理</a>
+                </li>
+                <li>
+                    <a href="__MODULE__/CommentManage"><i class="glyphicon glyphicon-comment"></i> 评论管理</a>
+                </li>
+                <li>
+                    <a href="__MODULE__/ReplyManage"><i class="glyphicon glyphicon-comment"></i>回复管理</a>
+                </li>
+                <li class="active">
+                    <a href="__MODULE__/SportCount"><i class="glyphicon glyphicon-stats"></i>运动统计</a>
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </nav>
+
+    <div id="page-wrapper">
+        <div class="container-fluid">
+            <div class="table-responsive">
+                <!--用户信息展示管理-->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h4><strong>运动统计</strong></h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr style="height: 8px;background-color: #00b3ff">
+                <!--数据可视化展示-->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div><h3><strong>年级人数比</strong></h3></div>
+                        <div id="sport" style="height: 400px; width: 100% "></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div><h3><strong>运动人数统计</strong></h3></div>
+                        <div id="people_count" style="height: 400px; width: 100% ">
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <form action="" method="post" id="myform">
+                            <div><h3><strong>每日运动统计</strong></h3></div>
+                            <div>选择日期： <input type="text" id="date" name="date" onclick="new Calendar().show(this)" id="date"> <button class="btn btn-primary" id="daySportSearch" onclick="getDay_sport(1);" type="button"><span class="glyphicon glyphicon-search"></span>查询</button></div>
+                            <div id="daysport" style="height: 500px;width: 100%"></div>
+                            <button class="btn btn-default" style="margin-right: 10px" onclick="lastPage()" type="button">上一页</button><button class="btn btn-default" onclick="nextPage()" type="button">下一页</button>
+                            <span style="float: right;margin-right: 80px"><a href="javascript: ;" id="downLoadDaySport">导出每日运动统计</a></span>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <div><h3><strong>运动统计</strong></h3></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="container">
+                            <div class="form-group">
+                                <select name="range" id="range">
+                                    <option value="week" selected="selected">本周</option>
+                                    <option value="month">本月</option>
+                                </select>
+                                <button class="btn btn-primary" id="ck"><span class="glyphicon glyphicon-search"></span>查询</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div><a href="__MODULE__/SportCount/downLoad_week">导出本周数据</a></div>
+                    </div>
+                    <div class="col-md-4">
+                        <div><a href="__MODULE__/SportCount/downLoad_month">导出本月数据</a></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive" id="noData">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /#page-wrapper -->
+
+</div>
+<script src="_PUBLIC_/bootstrap/js/echarts.min.js"></script>
+<script src="_PUBLIC_/bootstrap/js/calendar.js"></script>
+<script type="text/javascript">
+    //年级人数比 饼状图
+    var sport = echarts.init(document.getElementById('sport'));
+    /*这是变量啊,怎么老是忘了*/
+    var option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b}: {c} ({d}%)"
+                },
+                title: {
+                    text: '',
+                    x: 'center'
+                },
+                legend: {
+                    orient: 'vertical',
+                    left: 'left',
+                    data: <{$ldata}>
+            },
+            toolbox : {
+                show : true,
+                feature:{
+                    mark : {
+                    show: true
+                    },
+            dataView : {
+                show: true,
+                eadOnly:
+                true
+            },
+            magicType : {
+                show: true,
+                ype:['pie', 'funnel']
+            },
+            restore : {
+                show: true
+            },
+            saveAsImage : {
+                show : true
+            }
+        }
+    }
+    ,
+    series: [
+        {
+            name: '',
+            type: 'pie',
+            radius: '55%',
+            center: ['40%', '60%'],
+            data: <{$sdata}>.sort(function (a, b) {
+        return b.value - a.value
+    }),
+    /*对数据排序*/
+    }
+    ]
+    }
+    ;
+    sport.setOption(option);
+</script>
+<script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart1 = echarts.init(document.getElementById('people_count'));
+
+    // 指定图表的配置项和数据
+    var option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {            // 坐标轴指示器，坐标轴触发有效
+                        type: 'line'        // 默认为直线，可选为：'line' | 'shadow'
+                    }
+                },
+                title: {
+                    text: '运动人数统计'
+                },
+                legend: {
+                    data: ['运动人数']
+                },
+                toolbox: {
+                    feature: {
+                        dataView: {show: true, readOnly: true},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                xAxis: {
+                    data: <{$stype}>
+            },
+            yAxis:
+    {
+    }
+    ,
+    series:[{
+        name: '运动人数',
+        type: 'bar',
+        data: <{$sval}>
+    }]
+    };
+    // 使用刚指定的配置项和数据显示图表。
+    myChart1.setOption(option);
+</script>
+<script type="text/javascript">
+    $('#downLoadDaySport').click(function () {
+        var url = "__MODULE__/SportCount/downLoad_days";
+        $('#myform').attr('action',url).submit();
+    });
+</script>
+<script type="text/javascript">
+    //每日运动统计
+    var i =1;
+    var pages = 1;
+    getDay_sport(1);
+    function lastPage() {
+        i--;
+        if(i<1){
+            i++;
+            alert('已经是第一页了');
+            return ;
+        }
+        getDay_sport(i);
+    }
+    
+    function nextPage() {
+        i++;
+        if(i>pages){
+            i--;
+            alert('已经是最后一页了！');
+            return ;
+        }
+        getDay_sport(i);
+    }
+    function getDay_sport(i) {
+        var url = '__MODULE__/SportCount/days_sport';
+        var date = $('#date').val();
+//        alert(date);
+        $.post(url, {
+            p:i,
+            date:date
+        }, function (data, status) {
+            i=data['p'];
+            pages = data['pages'];
+            var myChart2 = echarts.init(document.getElementById('daysport'));
+            var option = {
+                tooltip: {
+                    trigger: 'axis'
+                },
+                toolbox: {
+                    feature: {
+                        dataView: {show: true, readOnly: true},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                legend: {
+                    data: ['运动距离', '运动时间']
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        data: data['user']
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '运动距离',
+                        min: 0,
+                        max: 10,
+                        interval: 2,
+                            axisLabel: {
+                            formatter: '{value} km'
+                        }
+                    },
+                    {
+                        type: 'value',
+                        name: '运动时间',
+                        min: 0,
+                        max: 10,
+                        interval: 2,
+                        axisLabel: {
+                            formatter: '{value} h'
+                        }
+                    },
+                ],
+                series: [
+                    {
+                        name: '运动距离',
+                        type: 'bar',
+                        data: data['sdata'],
+                        markLine : {
+                            lineStyle: {
+                                normal: {
+                                    type: 'solid',
+                                    color:'#FF0000'
+                                }
+                            },
+                            data : [
+                                {
+                                    name: '运动距离目标线',
+                                    yAxis: data['itemData']
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        yAxisIndex:1,
+                        name: '运动时间',
+                        type: 'bar',
+                        data: data['stime'],
+                        markLine : {
+                            lineStyle: {
+                                normal: {
+                                    type: 'solid',
+                                    color:'#00FF00'
+                                }
+                            },
+                            data : [
+                                {
+                                    name: '运动时间目标线',
+                                    yAxis: data['itemTime']
+                                }
+                            ]
+                        }
+                    },
+                ]
+            };
+            myChart2.setOption(option);
+        }, 'json');
+    }
+</script>
+<script type="text/javascript">
+    $('#ck').click(function () {
+        getSportCnt(1);
+    });
+    function getSportCnt(p) {
+        i = 1;
+        var range = $('#range').val();
+        $.post("__MODULE__/SportCount/sportCnt", {
+            p: p,
+            range:range
+        }, function (data, stutas) {
+            if (data !== null) {
+
+                i= (data['page']['p']-1)*10+1;
+                $("#noData").empty();
+                var thead = "<table class='table table-condensed table-hover'><thead><tr><th>排名</th><th>学号</th><th>姓名</th><th>班级</th><th>运动时间</th><th>运动距离</th><th>完成%比</th></thead><tbody id='showList'> </tbody></table><div id='page'></div>";
+                $("#noData").append(thead);
+                $.each(data, function (index, arr) {
+                    showSportCnt(arr);
+                });
+                pages1(data['page']);//分页
+            } else {
+                $("#noData").empty();
+                showEmpty();
+            }
+        }, 'json');
+    }
+
+    function showSportCnt(data) {
+        var str = '';
+        if(data['user_number'] != undefined){
+            str += "<tr><td class='tds'>" + (i++) + "</td>";
+            str += "<td class='tds'>" + data['user_number'] + "</td>";
+            str += "<td class='tds'>" + data['user_name'] + "</td>";
+            str += "<td class='tds'>" + data['user_class'] + "</td>";
+            str += "<td class='tds'>" + (Number(data['stime'])/60).toFixed(2) + "h</td>";
+            str += "<td class='tds'>" + (Number(data['sdata'])/1000).toFixed(2) + "km</td>";
+            str += "<td class='tds'>" + (Number(data['rate'])*100).toFixed(2) + "%</td>";
+        }
+            $("#showList").append(str);
+    }
+    function showEmpty() {
+        var str = '';
+        str += "<h2>没有数据哦！</h2>";
+        $("#noData").append(str);
+    }
+
+    function pages1(page) {
+        var str = '';
+        str += "<div class='page collapse navbar-collapse navbar-ex1-collapse'><ul class='pagination'>";
+        str += "<li><a href='javascript:;' onclick='pCl(this," + page['p'] + ")'>首页</a></li>";
+        str += "<li><a href='javascript:;' onclick='pCl(this," + page['p'] + ")'>上一页</a></li>";
+        if (page['pages'] <= 5) {
+            for (var i = 1; i <= page['pages']; i++) {
+                str += "<li><a href='javascript:;' onclick='pCl(this," + page['p'] + ","+page['pages']+")'>" + i + "</a></li>";
+            }
+        } else {
+            if (page['p'] < 4) {
+                for (var j = 1; j <= 5; j++) {
+                    str += "<li><a href='javascript:;' onclick='pCl(this," + page['p'] + ","+page['pages']+")'>" + j + "</a></li>";
+                }
+            } /*else if (page['p'] >= 4) {
+                for (var k = page['p']; k <= page['pages']; k++) {
+                    str += "<li><a href='javascript:;' onclick='pCl(this," + page['p'] + ","+page['pages']+")'>" + k + "</a></li>";
+                }
+            } */else if (page['p'] + 1 >= page['pages']) {
+                for (var l = page['pages'] - 4; l <= page['pages']; l++) {
+                    str += "<li><a href='javascript:;' onclick='pCl(this," + page['p'] + ","+page['pages']+")'>" + l + "</a></li>";
+                }
+            } else {
+                for (var n = page['p'] - 2; n <= page['p'] + 2; n++) {
+                    str += "<li><a href='javascript:;' onclick='pCl(this," + page['p'] + ","+page['pages']+")'>" + n + "</a></li>";
+                }
+            }
+        }
+        str += "<li><a href='javascript:;' onclick='pCl(this," + page['p'] + ","+page['pages']+")'>下一页</a></li>";
+        str += "<li><a href='javascript:;' onclick='pCl(this," + page['p'] + ","+page['pages']+")'>尾页</a></li>";
+        str += "</ul></div>";
+        $("#page").append(str);
+    }
+
+    function pCl(obj, p, pages) {
+        var val = $(obj).text();
+        if (val === '首页') {
+            if(p === 1){
+                alert('已经是第一页了！');
+            }else{
+                getSportCnt(1);
+            }
+        } else if (val === '上一页') {
+            if ((p-1) < 1) {
+                alert('已经是第一页了！');
+            } else {
+                getSportCnt(--p);
+            }
+        } else if (val === '下一页') {
+            if ((p+1) > pages) {
+                alert('已经是最后一页了！');
+            }else  {
+                getSportCnt(++p);
+            }
+        } else if(val === '尾页'){
+            if(p === pages){
+                alert('已经是最后一页了！');
+            }else{
+                getSportCnt(pages);
+            }
+        }else {
+            getSportCnt(val);
+        }
+    }
+</script>
+</body>
+</html>

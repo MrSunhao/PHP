@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>用户管理</title>
+
+    <!--引入相关css文件-->
+    <link rel="stylesheet" href="_PUBLIC_/bootstrap/css/bootstrap.min.css">
+    <script src=" _PUBLIC_/bootstrap/js/jquery-3.1.1.min.js"></script>
+    <script src=" _PUBLIC_/bootstrap/js/bootstrap.min.js"></script>
+
+    <style>
+        .myform {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-offset-3 col-md-6">
+                <div class="myform">
+                    <form action="" method="post">
+                        <div class="form-group">
+                            <label for="title">主题</label>
+                            <input type="text" name="title" id="title"
+                                   class="form-control"
+                                   placeholder="请输入运动主题"/>
+                        </div>
+
+                        <div class="form-group">
+                            <label>相关内容</label>
+                            <textarea name="content" id="content" cols="30" rows="5" maxlength="260"
+                                      class="form-control"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>目标距离</label>
+                            <div class="input-group">
+                                <input type="text" name="data" id="data" class="form-control"
+                                       placeholder="请输入运动距离,单位是KM"/>
+                                <span class="input-group-addon">KM</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label>目标时间</label>
+                            <select name="hour" id="hour">
+                                <for start="0" end="9">
+                                        <option value="<{$i}>"><{$i}></option>
+                                </for>
+                            </select><label for="hour">小时</label>
+                            <select name="minute" id="minute">
+                                <for start="0" end="60">
+                                        <option value="<{$i}>"><{$i}></option>
+                                </for>
+                            </select><label for="minute">分钟</label>
+                        </div>
+                        <div style="margin-top: 18px">
+                            <button type="button" class="btn btn-default" onclick="addN()">提交</button>
+                            <button type="reset" class="btn btn-default" style="float: right;">取消</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function addN() {
+        var title = $('#title').val();
+        var content = $('#content').val();
+        var data = $('#data').val();
+        var hour = $('#hour').val();
+        var minute = $('#minute').val();
+        var id = $('#id').val();
+        var arr = new Array();
+        arr[0] = title;
+        arr[1] = content;
+        arr[2] = data;
+        arr[3] = hour;
+        arr[4] = minute;
+        window.opener.doIssueN(arr);
+        window.close();
+    }
+</script>
+</body>
+</html>

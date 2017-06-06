@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发表动态</title>
+    <link rel="stylesheet" href="_PUBLIC_/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="_PUBLIC_/bootstrap/bootstrap-fileinput/css/fileinput.min.css">
+    <!--引入bootstrap的相关js文件-->
+    <script src="_PUBLIC_/bootstrap/js/jquery-3.1.1.min.js"></script>
+    <script src="_PUBLIC_/bootstrap/js/bootstrap.min.js"></script>
+    <!--引入bootstrap-fileinput的相关js文件-->
+    <script src="_PUBLIC_/bootstrap/bootstrap-fileinput/js/fileinput.js"></script>
+    <script src="_PUBLIC_/bootstrap/bootstrap-fileinput/js/locales/zh.js"></script>
+
+    <style type="text/css">
+        body {
+            background-color: rgba(186, 168, 255, 0.46);
+        }
+
+        #posted {
+            position: fixed;
+            right: 35px;
+            bottom: 160px;
+        }
+    </style>
+</head>
+<body>
+<!--导航栏-->
+<div class="container">
+    <div class="navbar navbar-default " role="navigation">
+        <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse"
+                            data-target="#example-navbar-collapse">
+                        <span class="sr-only">切换导航</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="navbar-brand ">首页</a>
+                </div>
+                <div class="collapse navbar-collapse" id="example-navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="operation"><a href="__MODULE__/Index/rankList">运动榜</a></li>
+                        <li class="active"><a href="__MODULE__/Index/dynamic">动态</a></li>
+                        <li><a href="__MODULE__/Index/record">个人记录</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <if condition="isset($_SESSION['user'])">
+                            <li class="operation"><a
+                                    href="__MODULE__/User/info/id/<{$Think.session.user.user_id}>"><{$Think.session.user.user_number}></a>
+                            </li>
+                            <li class="operation"><a href="__MODULE__/User/logout"><span
+                                    class="glyphicon glyphicon-log-out">注销</span></a></li>
+                            <else/>
+                            <li><a href="__MODULE__/Regist"><span
+                                    class="glyphicon glyphicon-user"></span> 注册</a></li>
+                            <li><a href="__MODULE__/Login"><span
+                                    class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+                            <!--<li class="operation"><a href="#">个人信息</a></li>-->
+                        </if>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- 动态表单 -->
+    <div class="container">
+        <div class="col-md-offset-2 col-md-8">
+            <div class="row">
+                <div class="col">
+                    <form action="__MODULE__/Index/posted" method="post" onsubmit="return checkPosted()"
+                          enctype="multipart/form-data"
+                          class="form-horizontal">
+                        <div class="form-group">
+                            <label for="sport_type"><h4><strong><span class="glyphicon glyphicon-tasks"
+                                                                      style="color: rgb(0, 255, 0);"></span>运动类型</strong>
+                            </h4></label>
+                            <select name="sport_type" id="sport_type" class="form-control" onchange="show(this)">
+                                <option value="1" selected>跑步</option>
+                                <option value="2">篮球</option>
+                                <option value="3">足球</option>
+                                <option value="4">羽毛球</option>
+                                <option value="5">乒乒球</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="time" style="display: none">
+                            <h4><strong><span class="glyphicon glyphicon-time" style="color: rgb(255, 227, 0);"></span>运动时间</strong>
+                            </h4>
+                            <div class="form-control">
+                                <select name="hour" id="hour">
+                                    <for start="0" end="9">
+                                        <option value="<{$i}>"><{$i}></option>
+                                    </for>
+                                </select><label for="hour">小时</label>
+                                <select name="minute" id="minute">
+                                    <for start="0" end="60">
+                                        <option value="<{$i}>"><{$i}></option>
+                                    </for>
+                                </select><label for="minute">分钟</label>
+                            </div>
+                        </div>
+                        <div class="form-group" id="data">
+                            <h4><strong><span class="glyphicon glyphicon-flash" style="color: rgb(222, 175, 0);"></span>跑步距离</strong>
+                            </h4>
+                            <div class="form-control" style="line-height: 100%">
+                                <input type="text" name="sport_data" id="sport_data"><label for="sport_data">千米</label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <h4><strong><span class="glyphicon glyphicon-send" style="color: rgb(32, 149, 255);"></span>畅所欲言</strong>
+                            </h4>
+                            <textarea name="content" id="content" class="form-control" cols="30" rows="5"
+                                      maxlength="200"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <h4><strong><span class="glyphicon glyphicon-upload" style="color: rgb(0, 142, 40);"></span>运动截图</strong>
+                                <small>必须上传哦</small>
+                            </h4>
+                            <input id="file-0a" class="file form-control" name="sport_image" type="file" multiple
+                                   data-min-file-count="1">
+                        </div>
+                        <div class="form-group">
+                            <div id="submit" style="float: left;margin-left: 50px">
+                                <input type="submit" name="submit" value="发表" class="btn btn-primary">
+                            </div>
+
+                            <div id="reset" style="float: right;margin-right: 50px">
+                                <input type="reset" name="reset" value="重置" class="btn btn-primary">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    $("#file-0a").fileinput({
+        'allowedFileExtensions': ['jpg', 'png', 'gif', 'jpeg'],
+        language: 'zh',
+        maxFileSize: 2000,//文件的最大大小
+        showUpload: false,
+    });
+    function show(type) {
+        var val = type.value;
+        if (val == 1) {
+            document.getElementById('data').style.display = 'block';
+            document.getElementById('sport_data').disabled = false;
+            document.getElementById('time').style.display = 'none';
+            document.getElementById('hour').disabled = "disabled";
+            document.getElementById('minute').disabled = "disabled";
+        } else {
+            document.getElementById('data').style.display = 'none';
+            document.getElementById('sport_data').disabled = "disabled";
+            document.getElementById('time').style.display = 'block';
+            document.getElementById('hour').disabled = false;
+            document.getElementById('minute').disabled = false;
+        }
+    }
+
+    function checkPosted() {
+        var sport_type = $('#sport_type').val();
+        if (parseInt(sport_type) === 1) {
+            var sport_data = $('#sport_data').val();
+            if (sport_data > 40) {
+                alert('运动距离不能超过40千米哦！！！');
+                return false;
+            }
+        } else {
+            var time = 0;
+            var hour = $('#hour').val();
+            var minute = $('#minute').val();
+            time = parseInt(hour) + minute/60;
+            if (time >= 9) {
+                alert('运动时间不能超过9小时！！！');
+                return false;
+            }
+        }
+        return true;
+    }
+</script>
+</body>
+</html>
+

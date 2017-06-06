@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态</title>
+    <link rel="stylesheet" href="_PUBLIC_/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="_PUBLIC_/bootstrap/css/style.css">
+    <script src=" _PUBLIC_/bootstrap/js/jquery-3.1.1.min.js"></script>
+    <script src=" _PUBLIC_/bootstrap/js/bootstrap.min.js"></script>
+    <script src=" _PUBLIC_/bootstrap/js/jquery.scrollToTop.min.js"></script>
+    <!--<link rel="stylesheet" href="css/bootstrap.css">  -->
+    <!--<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>-->
+    <!--<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+
+    <style type="text/css">
+        body {
+            background-color: rgba(186, 168, 255, 0.46);
+        }
+        .fp{
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<!--导航栏-->
+<div class="container">
+    <div class="navbar navbar-default " role="navigation">
+        <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse"
+                            data-target="#example-navbar-collapse">
+                        <span class="sr-only">切换导航</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="__MODULE__/Index ">首页</a>
+                </div>
+                <div class="collapse navbar-collapse" id="example-navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="operation"><a href="__MODULE__/Index/rankList">运动榜</a></li>
+                        <li class="operation"><a href="__MODULE__/Index/dynamic">动态</a></li>
+                        <if condition="$Think.session.user.user_id eq $uid">
+                            <li class="active"><a href="__MODULE__/Index/record">个人记录</a></li>
+                            <else/>
+                            <li class="operation"><a href="__MODULE__/Index/record">个人记录</a></li>
+                        </if>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <if condition="isset($_SESSION['user'])">
+                            <li class="operation"><a
+                                    href="__MODULE__/User/info/id/<{$Think.session.user.user_id}>"><{$Think.session.user.user_number}></a>
+                            </li>
+                            <li class="operation"><a href="__MODULE__/User/logout"><span
+                                    class="glyphicon glyphicon-log-out">注销</span></a></li>
+                            <else/>
+                            <li><a href="__MODULE__/Regist"><span
+                                    class="glyphicon glyphicon-user"></span> 注册</a></li>
+                            <li><a href="__MODULE__/Login"><span
+                                    class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+                        </if>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <!-- 动态 -->
+    <a href="#Top" id="toTop"><img src="_PUBLIC_/bootstrap/images/37bOOOPIC23_202.jpg" alt="" height="64px" width="64px"></a>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h3 style="text-align: center"><{$uname}>的运动记录</h3>
+            </div>
+        </div>
+    </div>
+    <div class="container desc" id="dyna_con">
+        <!--内容展示-->
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="nodata" style="text-align: center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<footer>
+    <div id="footer" class="container">
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="row" style="margin-top: 10px;font-size: 10px;">
+                    <div class="col-md-4">
+                        <p class="fp">计算机学院兴趣小组出品</p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="fp">如果您有更好的建议发送邮件至 <a href="javascript:;" style="font-size: 12px">sun668vip@163.com</a></p>
+                    </div>
+                    <div class="col-md-4">
+                        <p class="fp">©2016 Beyond</p>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+</footer>
+<script>
+    $(function () {
+        $("#toTop").scrollToTop();
+    });
+    var i = 1;
+    var totalpage = 1; //总页数 初始值为1
+    var winH = $(window).height(); //页面可视区域高度
+    $(window).scroll(function () {
+        if (i <= totalpage) { // 当滚动的页数小于总页数的时候，继续加载
+            var pageH = $(document.body).height();
+            var scrollT = $(window).scrollTop(); //滚动条top
+            var rate = (pageH - winH - scrollT) / winH;
+            if (rate < 0.01) {
+                setTimeout(getJson(i), 2000);
+
+            }
+        } else { //否则显示无数据
+            showEmpty();
+        }
+    });
+    getJson(1); //加载第一页
+    function getJson(page) {
+        $(".nodata").show().html("<img src='_PUBLIC_/bootstrap/images/loading.gif'/>");
+        $.getJSON("__MODULE__/Index/recordPage", {
+            page: i,
+            uid:<{$uid}>
+        }, function (json) {
+            if (json) {
+                $.each(json,
+                    function (index, array) {
+                        showDynamic(array);
+                    });
+                $(".nodata").hide()
+            } else {
+                showEmpty(); //数据为空的时候
+            }
+        });
+        i++;
+    }
+    function showEmpty() {
+        $(".nodata").show().html("<span style='color: #6732ff'><strong>别滚了，已经到底咯。。。</strong></span>");
+    }
+    function showDynamic(sportInfo) {
+        var str = "";
+        if (typeof (sportInfo['topic_id']) != "undefined") {
+            str += "<div class='dynamic_content'><div class='row'><div class='col-md-offset-2 col-md-8'><div>";
+            if (sportInfo['user_image'] === null) {
+
+                str += "<a href='__MODULE__/User/info/id/" + sportInfo['topic_user_id'] + "'><img class='img-circle' src='_IMG_/avatar/2016122.jpg' alt='' width='50'height='50'></a>&nbsp;&nbsp;<span>" + sportInfo['user_name'] + "</span>";
+
+            } else {
+                str += "<a href='__MODULE__/User/info/id/" + sportInfo['topic_user_id'] + "'><img class='img-circle' src='_IMG_/avatar/" + sportInfo['user_image'] + "' alt='' width='50' height='50'></a>&nbsp;&nbsp;<span>" + sportInfo['user_name'] + "</span>";
+            }
+            str += "</div><div class='time' style='float: right'><span>" + sportInfo['topic_posted_time'] + "</span></div><hr><div>";
+            var uid = "";
+            if("<{$Think.session.user.user_id}>" != ''){
+                uid = "<{$Think.session.user.user_id}>";
+            }
+            if(parseInt(uid) === parseInt(sportInfo['topic_user_id'])){
+                str += "<div class='del' style='float: right'><a href='__MODULE__/Index/del/tid/"+sportInfo['topic_id']+"'>删除</a></div>";
+            }
+            str += "<h3><strong>我的运动:</strong>" + sportInfo['topic_play_type'] + "</h3>";
+            if (sportInfo['topic_play_type'] == '跑步') {
+                str += "<h4>我今天运动了:<span style='color: red'>" + (sportInfo['topic_play_data']/1000) + "</span>km</h4>";
+            } else {
+
+                str += "<h4>我今天运动了:<span style='color: red'>" + Math.floor(sportInfo['topic_play_data'] / 60) + "</span>小时";
+                //str += "<span style='color: red'>"+ sportInfo['topic_play_data']-60*Math.floor(sportInfo['topic_play_data']/60) + "</span>分钟</h4>";
+                str += "<span style='color: red'>" + (sportInfo['topic_play_data'] - 60 * Math.floor(sportInfo['topic_play_data'] / 60)) + "</span>分钟</h4>";
+            }
+            str += "<p>";
+            var content;
+            if (sportInfo['topic_content'] === null) {
+                content = "";
+            } else {
+                content = sportInfo['topic_content'];
+            }
+            str += content + "</p>";
+            str += "</div></div></div><div class='row'> <div class='col-md-offset-2 col-md-8' centered>";
+            str += "<a href='_IMG_/sportImg/" + sportInfo['topic_play_image'] + "' target='_blank'><img src='_IMG_/sportImg/" + sportInfo['topic_play_image'] + "' alt='' class='img-responsive' height='450' width='300'></a>";
+            str += "</div></div><br><div class='row'> <div class='col-md-offset-2 col-md-8' centered><span style='float: right'><a href='__MODULE__/Comment/index/tid/"+sportInfo['topic_id']+"'>评论("+sportInfo['comm_cnt']+")</a></span></div></div><hr></div>";
+
+            $("#dyna_con").append(str);
+        }
+        if (typeof (sportInfo['toltalpage']) == "undefined") {
+            totalpage = 1;
+        } else {
+            totalpage = sportInfo['toltalpage'];
+        }
+    }
+</script>
+</body>
+</html>
+

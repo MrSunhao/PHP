@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>修改头像</title>
+    <link rel="stylesheet" href="_PUBLIC_/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="_PUBLIC_/bootstrap/bootstrap-fileinput/css/fileinput.min.css">
+    <!--引入bootstrap的相关js文件-->
+    <script src="_PUBLIC_/bootstrap/js/jquery-3.1.1.min.js"></script>
+    <script src="_PUBLIC_/bootstrap/js/bootstrap.min.js"></script>
+    <!--引入bootstrap-fileinput的相关js文件-->
+    <script src="_PUBLIC_/bootstrap/bootstrap-fileinput/js/fileinput.js"></script>
+    <script src="_PUBLIC_/bootstrap/bootstrap-fileinput/js/locales/zh.js"></script>
+    <style>
+        body {
+            height: 100%;
+            width: 100%;
+            background-color: #5bc0de;
+        }
+
+        h1 {
+            text-align: center;
+            text-shadow: #0f0f0f;
+        }
+
+        .loginCon {
+            padding: 40px;
+        }
+
+        .form-horizontal {
+            background-color: gainsboro;
+            padding-bottom: 40px;
+            border-radius: 15px;
+        }
+
+        .form-horizontal .form-group {
+            padding: 0 20px;
+            margin: 0 0 25px 0;
+        }
+
+        #submit {
+            margin-left: 20px;
+            float: left;
+            border-radius: 12px;
+        }
+
+        #reset {
+            float: right;
+            margin-right: 20px;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="navbar navbar-default " role="navigation">
+        <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse"
+                            data-target="#example-navbar-collapse">
+                        <span class="sr-only">切换导航</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="__MODULE__/Index">首页</a>
+                </div>
+                <div class="collapse navbar-collapse" id="example-navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="operation"><a href="__MODULE__/Index/rankList">运动榜</a></li>
+                        <li class="operation"><a href="__MODULE__/Index/dynamic">动态</a></li>
+                        <li><a href="__MODULE__/Index/record">个人记录</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <if condition="isset($_SESSION['user'])">
+                            <li class="active"><a
+                                    href="__MODULE__/User/info/id/<{$Think.session.user.user_id}>"><{$Think.session.user.user_number}></a>
+                            </li>
+                            <li class="operation"><a href="__MODULE__/User/logout"><span
+                                    class="glyphicon glyphicon-log-out">注销</span></a></li>
+                            <else/>
+                            <li><a href="__MODULE__/Regist"><span
+                                    class="glyphicon glyphicon-user"></span> 注册</a></li>
+                            <li><a href="__MODULE__/Login"><span
+                                    class="glyphicon glyphicon-log-in"></span> 登录</a></li>
+                        </if>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="container kv-main">
+        <div class="page-header">
+            <h1>上传头像</h1>
+        </div>
+        <form action="__MODULE__/User/updateImg" enctype="multipart/form-data" method="post">
+            <input id="file-0a" class="file form-control" name="user_image" type="file" multiple
+                   data-min-file-count="1">
+            <br>
+            <button type="submit" class="btn btn-primary">上传</button>
+            <button type="reset" class="btn btn-default">取消</button>
+        </form>
+    </div>
+    <script>
+        $("#file-0a").fileinput({
+            'allowedFileExtensions': ['jpg', 'png', 'gif', 'jpeg'],
+            language: 'zh',
+            maxFileSize: 2000,//文件的最大大小
+        });
+    </script>
+</div>
+</body>
+</html>
